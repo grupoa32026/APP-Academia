@@ -1,0 +1,13 @@
+Si se desea arrancar los contenedores de BBDD sólo y lanzar la aplicación python a mano:
+  Lanzar docker-compose.yaml  
+  Ejecuta: cd web
+  Ejecuta: virtualenv env   (si da error porque no reconoce pip: python -m pip install virtualenv )
+  Ejecuta: source env/bin/activate en linux o env\Scripts\activate.bat en Windows
+  Ejecuta: pip install -r requirements.txt   (instala los paquetes necesarios)
+  Ejecuta: python app.py
+  Probar la aplicación con: localhost:8080/static/index.html
+
+Si se desea arrancar los contenedores de BBDD y de python hay que:
+  Revisar el archivo web/app.py y ocultar la línea 34
+  Lanzar: docker-compose -f  docker-composePython.yml up -d
+  Probar la aplicación en localhost:9094/static/index.html

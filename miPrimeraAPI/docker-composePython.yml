@@ -1,0 +1,41 @@
+services:
+  mariadb:
+    image: mariadb
+    container_name: mariadb
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: example
+      MARIADB_USER: agente
+      MARIADB_USER_PASSWORD: 0traClave
+      MARIADB_DATABASE: ciber
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./Chuches.sql://docker-entrypoint-initdb.d/Chuches.sql:ro
+    user: mysql
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    environment:
+      - PMA_HOST=mariadb
+    ports:
+      - 9093:80
+    depends_on:
+      - mariadb
+  python:
+    build: ./api
+    container_name: python
+    environment:
+      DB_USERNAME: root
+      DB_PASSWORD: example
+      DB_DATABASE: ciber
+      DB_HOST: mariadb
+      DB_PORT: 3306
+      PORT: 8080
+      HOST: 0.0.0.0
+    ports:
+      - 9094:8080
+    depends_on:
+      - mariadb
+volumes:
+  mariadb_data:
