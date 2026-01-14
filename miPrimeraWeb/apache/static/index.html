@@ -39,7 +39,7 @@
                 .then(response => response.json())
                 .then(result => {
                     if (result.status == "OK") {
-                        location.href = "chuches.html";
+                        location.href = "clases.html";
                     } else {
                         document.getElementsByClassName("error")[0].style.display = "block";
                     }
@@ -50,7 +50,7 @@
 </head>
 
 <body>
-    <h1>BIENVENIDO AL SISTEMA DEL PROFE</h1>
+    <h1>BIENVENIDO A LA ACADEMIA DE IDIOMAS</h1>
     <label>Usuario</label><input type="text" name="username" id="username"><br>
     <label>Clave</label><input type="password" name="password" id="password"><br>
     <label class="error">Usuario/clave erronea</label>

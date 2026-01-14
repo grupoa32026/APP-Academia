@@ -12,69 +12,70 @@
         }
     </style>
     <script>
+
+
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
         onload=function(){
-            pedirChuches();
+            pedirClases();
         }
-        function pintarChuches(lista){
+        function pintarClases(lista){
             let tbody=document.getElementsByTagName("tbody")[0];
             tbody.innerText="";
 
-            lista.forEach(chuche => {
+            lista.forEach(Clase => {
                 let texto=`<tr>
-                        <td><img src="${chuche.foto}" width="70"></td>
-                        <td>${chuche.nombre}</td>
-                        <td>${chuche.descripcion}</td>
-                        <td>${chuche.ingredientes}</td>
-                        <td>${chuche.precio}</td>
-                        <td>${chuche.precio}</td>
+                        <td><img src="${clase.foto}" width="70"></td>
+                        <td>${clase.idioma}</td>
+                        <td>${clase.nivel}</td>
+                        <td>${clase.precio}</td>
+                        <td>${clase.precio}</td>
                         <td>`
-                texto+=`<a href="editar_chuche.html?id=${chuche.id}" class="button is-info">Editar</a>
+                texto+=`<a href="editar_clase.html?id=${clase.id}" class="button is-info">Editar</a>
                         </td>
                         <td>
-                            <button class="button is-danger" onclick="eliminarChuche(${chuche.id})">Eliminar</button>
+                            <button class="button is-danger" onclick="eliminarClase(${clase.id})">Eliminar</button>
                         </td>`
                 texto+=`</tr>`;
                 tbody.innerHTML+=texto                            
             });
         }
-        function pedirChuches(){
+        function pedirClases(){
             var requestOptions = {
                 method: 'GET',
                 headers: myHeaders,
             };
 
-            fetch("/api/chuches/", requestOptions)
+            fetch("/api/clases/", requestOptions)
                 .then(response => response.json())
                 .then(result => {
                     console.log(result);
-                    pintarChuches(result);
+                    pintarClases(result);
                 })
                 .catch(error => {
                     console.log('error', error);
-                    alert("Ha habido un error al recuperar las chuches. Refresque la página")
+                    alert("Ha habido un error al recuperar las clases. Refresque la página")
                 });
         }
-        function eliminarChuche(id){
+        function eliminarClase(id){
             var requestOptions = {
                 method: 'DELETE',
                 headers: myHeaders,
             };
 
-            fetch("/api/chuches/"+id, requestOptions)
+            fetch("/api/clases/"+id, requestOptions)
                 .then(response => response.json())
                 .then(result => {
                     if (result.status == "OK"){
-                        alert("Chuche eliminado")
-                        pedirChuches();
+                        alert("Clase eliminada")
+                        pedirClases();
                     } else {
-                        alert("La chuche no ha podido ser eliminada")
+                        alert("La Clase no ha podido ser eliminada")
                     }
                 })
                 .catch(error => {
                     console.log('error', error);
-                    alert("Se ha producido un error y la chuche no ha podido ser eliminado")
+                    alert("Se ha producido un error y la clase no ha podido ser eliminada")
                 });
         }
         function cerrarSesion(){
@@ -111,7 +112,7 @@
         </div>
         <div class="navbar-menu">
             <div class="navbar-start">
-                <a class="navbar-item" href="chuches.html">Chuches</a>
+                <a class="navbar-item" href="clases.html">Clases</a>
                 <a class="navbar-item" href="ficheros.html">Archivos</a>
                 <a class="navbar-item" href="javascript:cerrarSesion()">Cerrar sesion</a>
             </div>
@@ -124,15 +125,14 @@
     <section class="section">
         <div class="columns">
             <div class="column">
-                <h3 class="is-size-3">Chuches</h3>
-                <a id="enlaceAgregar" href="agregar_chuche.html" class="button is-success">Agregar</a>
+                <h3 class="is-size-3">Clases</h3>
+                <a id="enlaceAgregar" href="agregar_clase.html" class="button is-success">Agregar</a>
                 <table class="table">
                     <thead>
                         <tr>
                             <th>Imagen</th>
-                            <th>Nombre</th>
-                            <th>Descripcion</th>
-                            <th>Ingredientes</th>
+                            <th>idioma</th>
+                            <th>Nivel</th>
                             <th>Precio</th>
                             <th>PrecioIVA</th>
                             <th>Editar</th>
