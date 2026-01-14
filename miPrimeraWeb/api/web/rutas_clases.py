@@ -19,12 +19,11 @@ def guardar_clase():
     content_type = request.headers.get('Content-Type')
     if (content_type == 'application/json'):
         clase_json = request.json
-        nombre = clase_json["nombre"]
-        descripcion = clase_json["descripcion"]
+        idioma = clase_json["idioma"]
+        nivel = clase_json["nivel"]
         precio=clase_json["precio"]
         foto=clase_json["foto"]
-        ingredientes=clase_json["ingredientes"]
-        respuesta,code=controlador_clases.insertar_clase(nombre, descripcion,precio,foto,ingredientes)
+        respuesta,code=controlador_clases.insertar_clase(idioma, nivel,precio,foto)
     else:
         respuesta={"status":"Bad request"}
         code=401
@@ -41,12 +40,11 @@ def actualizar_clase():
     if (content_type == 'application/json'):
         clase_json = request.json
         id = clase_json["id"]
-        nombre = clase_json["nombre"]
-        descripcion = clase_json["descripcion"]
+        idioma = clase_json["idioma"]
+        nivel = clase_json["nivel"]
         precio=float(clase_json["precio"])
         foto=clase_json["foto"]
-        ingredientes=clase_json["ingredientes"]
-        respuesta,code=controlador_clases.actualizar_clase(id,nombre,descripcion,precio,foto,ingredientes)
+        respuesta,code=controlador_clases.actualizar_clase(id,idioma,nivel,precio,foto)
     else:
         respuesta={"status":"Bad request"}
         code=401
