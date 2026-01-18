@@ -1,47 +1,51 @@
 services:
-  mariadb:
+  mariadba3:
     image: mariadb
-    container_name: mariadb
-    restart: always
+    container_name: mariadba3
+    restart: unless-stopped
     environment:
       MARIADB_ROOT_PASSWORD: example
       MARIADB_USER: agente
       MARIADB_USER_PASSWORD: 0traClave
       MARIADB_DATABASE: ciber
     volumes:
-      - mariadb_data:/var/lib/mysql
+      - mariadb_dataa3:/var/lib/mysql
       - ./Chuches.sql://docker-entrypoint-initdb.d/Chuches.sql:ro
     user: mysql
-  phpmyadmin:
+  phpmyadmina3:
     image: phpmyadmin
     container_name: phpmyadmin
-    restart: always
+    restart: unless-stopped
     environment:
-      - PMA_HOST=mariadb
+      - PMA_HOST=mariadba3
     ports:
-      - 9093:80
+      - 7003:80
     depends_on:
-      - mariadb
-  python:
+      - mariadba3
+
+  pythona3:
     build: ./api
-    container_name: python
+    container_name: pythona3
     environment:
       DB_USERNAME: root
       DB_PASSWORD: example
       DB_DATABASE: ciber
-      DB_HOST: mariadb
+      DB_HOST: mariadba3
       DB_PORT: 3306
       PORT: 8080
       HOST: 0.0.0.0
     depends_on:
-      - mariadb
-  apache-waf:
-    build: ./apache #./waf/ en un futuro
+      - mariadba3
+    restart: unless-stopped
+
+  apachea3:
+    build: ./apache
     ports:
-      - 9090:80
+      - 6003:80
     depends_on:
-      - python
+      - pythona3
     links:
-      - python
+      - pythona3
+    restart: unless-stopped
 volumes:
-  mariadb_data:
+  mariadb_dataa3:

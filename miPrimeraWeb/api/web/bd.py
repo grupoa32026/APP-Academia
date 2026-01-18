@@ -6,4 +6,5 @@ def obtener_conexion():
                                 user=os.environ.get('DB_USERNAME'),
                                 password=os.environ.get('DB_PASSWORD'),
                                 port=int(os.environ.get('DB_PORT', 3306)),
-                                db=os.environ.get('DB_DATABASE'))
+                                db=os.environ.get('DB_DATABASE'),
+                                autocommit=False)

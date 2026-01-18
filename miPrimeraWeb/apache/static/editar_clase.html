@@ -5,12 +5,24 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <meta http-equiv="Last-Modified" content="0">
-    <title>EJEMPLO APP apache CON CRUD</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+    <title>Editar Clase - Academia de Idiomas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#485fc7',
+                        primaryDark: '#3a51b3'
+                    }
+                }
+            }
+        }
+    </script>
     <script>
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
@@ -18,10 +30,20 @@
         var queryString = window.location.search;
         var urlParams = new URLSearchParams(queryString);
         var id = urlParams.get('id');
+        
         onload = function () {
+            if (!id) {
+                alert("No se especificó el ID de la clase");
+                location.href = "clases.html";
+                return;
+            }
             obtenerDatosClase(id);
         }
+        
         function obtenerDatosClase(id) {
+            const btn = document.querySelector(".btn-primary");
+            btn.classList.add("opacity-50", "cursor-not-allowed");
+            
             var requestOptions = {
                 method: 'GET',
                 headers: myHeaders
@@ -29,36 +51,60 @@
 
             fetch("/api/clases/" + id, requestOptions)
                 .then(response => response.json())
-                .then(result => pintarClase(result))
+                .then(result => {
+                    btn.classList.remove("opacity-50", "cursor-not-allowed");
+                    if (result && Object.keys(result).length > 0) {
+                        pintarClase(result);
+                    } else {
+                        alert("No se encontró la clase");
+                        location.href = "clases.html";
+                    }
+                })
                 .catch(error => {
-                    alert("Ha habido un error al recuperar los datos del libro");
+                    btn.classList.remove("opacity-50", "cursor-not-allowed");
+                    console.log('error', error);
+                    alert("Ha habido un error al recuperar los datos de la clase");
                     location.href = "clases.html";
                 });
 
         }
+        
         function pintarClase(clase) {
             console.log(clase);
             
-            document.getElementById("idioma").value = clase.idioma;
-            document.getElementById("nivel").value = clase.nivel;
-            document.getElementById("precio").value = clase.precio;
-            document.getElementById("foto").src = clase.foto;
+            document.getElementById("idioma").value = clase.idioma || '';
+            document.getElementById("nivel").value = clase.nivel || '';
+            document.getElementById("precio").value = clase.precio || '';
+            document.getElementById("foto").value = clase.foto || '';
+            
+            if (clase.foto) {
+                document.getElementById("fotoPreview").src = clase.foto;
+                document.getElementById("fotoPreview").classList.remove("hidden");
+            }
         }
 
         function guardar() {
             let idioma = document.getElementById("idioma").value;
             let nivel= document.getElementById("nivel").value;
             let precio = document.getElementById("precio").value;
-           // let precioIVA = document.getElementById("precioIVA").value;
             let foto = document.getElementById("foto").value;
+            
+            if (!idioma || !nivel || !precio || !foto) {
+                alert("Por favor, completa todos los campos");
+                return;
+            }
+            
             let datos = JSON.stringify({
                 "id": id,
                 "idioma": idioma,
                 "nivel": nivel,
-                "precio": precio,
-              //  "precioIVA": precioIVA,
+                "precio": parseFloat(precio),
                 "foto": foto
             });
+            
+            const btn = document.querySelector(".btn-primary");
+            btn.classList.add("opacity-50", "cursor-not-allowed");
+
             var requestOptions = {
                 method: 'PUT',
                 headers: myHeaders,
@@ -71,61 +117,129 @@
             fetch("/api/clases/", requestOptions)
                 .then(response => response.json())
                 .then(result => {
+                    btn.classList.remove("opacity-50", "cursor-not-allowed");
                     
                     if (result.status == "OK") {
-                        alert("clase modificado")
-                        location.href = "clases.html"
+                        alert("Clase modificada correctamente");
+                        location.href = "clases.html";
                     } else {
-                        alert("La clase no ha podido ser modificada")
+                        alert("La clase no ha podido ser modificada");
                     }
                 })
                 .catch(error => {
+                    btn.classList.remove("opacity-50", "cursor-not-allowed");
                     console.log('error', error);
-                    alert("Se ha producido un error y la clase no ha podido ser modificada")
+                    alert("Se ha producido un error y la clase no ha podido ser modificada");
                 });
         }
+        
+        document.addEventListener('keypress', function(e) {
+            if(e.key === 'Enter') {
+                guardar();
+            }
+        });
     </script>
 </head>
 
-<body>
-    <nav class="navbar is-warning" role="navigation" aria-label="main navigation">
-        <div class="navbar-brand">
-            <button class="navbar-burger is-warning button" aria-label="menu" aria-expanded="false"
-                data-target="navbarBasicExample">
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-            </button>
-        </div>
-        <div class="navbar-menu">
-            <div class="navbar-start">
-                <a class="navbar-item" href="clases.html">Clases</a>
-            </div>
-            <div class="navbar-end">
-                <div class="navbar-item">
-                </div>
+<body class="bg-gradient-to-br from-gray-100 to-gray-200 min-h-screen font-sans">
+    <nav class="bg-gradient-to-r from-primary to-purple-600 shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <a class="text-white font-bold text-lg" href="clases.html">
+                    <i class="fas fa-language"></i>&nbsp;Academia de Idiomas
+                </a>
+                <a class="text-white/90 hover:bg-white/10 px-3 py-2 rounded-lg transition-colors" href="clases.html">
+                    <i class="fas fa-arrow-left"></i>&nbsp;Volver a Clases
+                </a>
             </div>
         </div>
     </nav>
-    <section class="section">
-        <div class="columns">
-            <div class="column">
-                <h3 class="is-size-3">Editar clase</h3>
-                <label for="Idioma">Idioma:</label>
-                <input required type="text" class="input" placeholder="Idioma" name="Idioma" id="idioma">
-                <label for="nivel">Nivel</label>
-                <input required type="text" class="input" placeholder="Nivel" name="nivel" id="nivel">
-                <label for="precio">Precio</label>
-                <input required type="number" class="input" placeholder="Precio" name="precio" id="precio">
-                <input required type="text" class="input" placeholder="Foto" name="foto" id="foto">                
-                <input required type="file" class="input" placeholder="Archivo Foto" name="filefoto" id="filefoto">
-                <img src="#" alt="Foto" width="500" height="600" id="foto">
-                <button type="button" onclick="guardar()" class="button is-success mt-2">Guardar</button>
-                <a href="clases.html" class="button is-primary mt-2">Volver</a>
-                </form>
+    
+    <div class="bg-gradient-to-r from-primary to-purple-600 text-white py-12 px-8 rounded-b-3xl mb-8">
+        <div class="container mx-auto text-center">
+            <h1 class="text-3xl font-bold">
+                <i class="fas fa-edit"></i> Editar Clase
+            </h1>
+            <p class="text-lg opacity-90 mt-2">Modifica los datos del curso</p>
+        </div>
+    </div>
+
+    <section class="container mx-auto px-4 mb-12">
+        <div class="max-w-lg mx-auto bg-white rounded-xl shadow-xl p-8">
+            <h2 class="text-2xl font-bold text-primary mb-6">
+                <i class="fas fa-cog mr-2"></i> Datos de la Clase
+            </h2>
+            
+            <div class="mb-5">
+                <label class="block font-semibold text-gray-700 mb-2" for="idioma">
+                    <i class="fas fa-language mr-2"></i> Idioma
+                </label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-globe text-gray-400"></i>
+                    </div>
+                    <input required type="text" class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all" placeholder="Ej: Inglés, Español, Francés" name="idioma" id="idioma">
+                </div>
+            </div>
+            
+            <div class="mb-5">
+                <label class="block font-semibold text-gray-700 mb-2" for="nivel">
+                    <i class="fas fa-signal mr-2"></i> Nivel
+                </label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-chart-bar text-gray-400"></i>
+                    </div>
+                    <select name="nivel" id="nivel" class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all bg-white">
+                        <option value="">Selecciona un nivel</option>
+                        <option value="Básico">Básico</option>
+                        <option value="Intermedio">Intermedio</option>
+                        <option value="Avanzado">Avanzado</option>
+                        <option value="Nativo">Nativo</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="mb-5">
+                <label class="block font-semibold text-gray-700 mb-2" for="precio">
+                    <i class="fas fa-tag mr-2"></i> Precio (€)
+                </label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-euro-sign text-gray-400"></i>
+                    </div>
+                    <input required type="number" class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all" placeholder="99.99" name="precio" id="precio" min="0" step="0.01">
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <label class="block font-semibold text-gray-700 mb-2" for="foto">
+                    <i class="fas fa-image mr-2"></i> URL de la Foto
+                </label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-link text-gray-400"></i>
+                    </div>
+                    <input required type="text" class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all" placeholder="https://ejemplo.com/imagen.jpg" name="foto" id="foto">
+                </div>
+            </div>
+            
+            <div class="bg-gray-100 rounded-lg p-4 mt-4">
+                <label class="block font-semibold text-gray-700 mb-2">
+                    <i class="fas fa-eye mr-2"></i> Vista Previa
+                </label>
+                <img src="#" alt="Vista previa" id="fotoPreview" class="hidden max-w-full rounded-lg shadow-md mx-auto">
+            </div>
+            
+            <div class="flex flex-col sm:flex-row justify-center gap-4 mt-8">
+                <button type="button" onclick="guardar()" class="btn-primary bg-primary hover:bg-primaryDark text-white font-bold py-3 px-8 rounded-lg transition-all transform hover:scale-105 shadow-lg">
+                    <i class="fas fa-save"></i>&nbsp;Guardar Cambios
+                </button>
+                <a href="clases.html" class="inline-flex items-center justify-center px-8 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-lg transition-all">
+                    <i class="fas fa-times"></i>&nbsp;Cancelar
+                </a>
             </div>
         </div>
     </section>
 </body>
-
 </html>
