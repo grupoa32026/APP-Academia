@@ -10,7 +10,7 @@ services:
       MARIADB_DATABASE: ciber
     volumes:
       - mariadb_dataa3:/var/lib/mysql
-      - ./Chuches.sql://docker-entrypoint-initdb.d/Chuches.sql:ro
+      - ./Clases.sql://docker-entrypoint-initdb.d/Clases.sql:ro
     user: mysql
   phpmyadmina3:
     image: phpmyadmin
