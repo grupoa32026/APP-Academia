@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mariadb-initdb
+  namespace: grupoa3
+data:
+  init.sql: |
+    CREATE DATABASE IF NOT EXISTS ciber;
+    USE ciber;
+    CREATE TABLE clases(
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        idioma VARCHAR(255) NOT NULL,
+        nivel VARCHAR(255) NOT NULL,
+        precio DECIMAL(9,2) NOT NULL,
+      foto VARCHAR(255)
+    );
+    CREATE TABLE comentarios(
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        usuario VARCHAR(255) NOT NULL,
+        descripcion VARCHAR(255) NOT NULL
+    );
+    CREATE TABLE usuarios(
+      usuario VARCHAR(100) NOT NULL PRIMARY KEY,
+        clave VARCHAR(255) NOT NULL,
+        perfil VARCHAR(100) NOT NULL
+    );
+    INSERT INTO `usuarios` (`usuario`, `clave`, `perfil`) VALUES ('root','1234', 'admin');
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mariadb
+  namespace: grupoa3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      containers:
+        - name: mariadb
+          image: mariadb
+          envFrom:
+            - secretRef:
+                name: grupoa3-secret
+          volumeMounts:
+            - name: mariadb-data
+              mountPath: /var/lib/mysql
+            - name: mariadb-init
+              mountPath: /docker-entrypoint-initdb.d
+      volumes:
+        - name: mariadb-data
+          persistentVolumeClaim:
+            claimName: grupoa3-pvc
+        - name: mariadb-init
+          configMap:
+            name: mariadb-initdb
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb
+  namespace: grupoa3
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: mariadb
