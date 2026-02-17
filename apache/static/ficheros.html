@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Archivos - Academia de Idiomas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#485fc7',
+                        primaryDark: '#3a51b3',
+                        primaryLight: '#748ffc'
+                    }
+                }
+            }
+        }
+    </script>
+    <script>
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        
+        function showLoading() {
+            document.getElementById('loading').classList.remove('hidden');
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading').classList.add('hidden');
+        }
+        
+        function enviarArchivo(){
+            const nombre = document.getElementById("nombre").value;
+            const fileInput = document.getElementById("fichero");
+            
+            if (!nombre || !fileInput.files[0]) {
+                alert("Por favor, completa todos los campos");
+                return;
+            }
+            
+            showLoading();
+            
+            const formData = new FormData();
+            formData.append('fichero', fileInput.files[0]);
+            formData.append('nombre', nombre);
+            
+            var requestOptions = {
+                method: 'POST',
+                body: formData
+            };
+
+            fetch("/api/ficheros/", requestOptions)
+                .then(response => response.json())
+                .then(result => {
+                    hideLoading();
+                    if (result.status == "OK"){
+                        alert("Archivo subido correctamente");
+                        document.getElementById("nombre").value = "";
+                        document.getElementById("fichero").value = "";
+                        document.getElementById('fileName').textContent = 'Ningún archivo seleccionado';
+                    } else {
+                        alert("El archivo no ha podido subirse");
+                    }
+                })
+                .catch(error => {
+                    hideLoading();
+                    console.log('error', error);
+                    alert("Ha habido un error al subir el archivo");
+                });
+        }
+
+        function verArchivo(){
+            const nombreArchivo = document.getElementById("nombreArchivo").value;
+            
+            if (!nombreArchivo) {
+                alert("Por favor, ingresa el nombre del archivo");
+                return;
+            }
+            
+            showLoading();
+            
+            var requestOptions = {
+                method: 'GET',
+            };
+
+            fetch("/api/ficheros/" + nombreArchivo, requestOptions)
+                .then(response => response.json())
+                .then(result => {
+                    hideLoading();
+                    document.getElementById("contenidoArchivo").value = result.contenido || "El contenido no está disponible";
+                })
+                .catch(error => {
+                    hideLoading();
+                    console.log('error', error);
+                    alert("Ha habido un error al recuperar el archivo");
+                });
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-gray-100 to-gray-200 min-h-screen font-sans">
+    <div id="loading" class="fixed inset-0 bg-white/90 flex items-center justify-center z-50 hidden">
+        <div class="text-center">
+            <button class="button is-loading is-large is-primary text-4xl bg-primary text-white px-8 py-4 rounded-lg">Cargando</button>
+        </div>
+    </div>
+
+    <section class="bg-gradient-to-r from-primary to-purple-600 text-white py-12 px-8 rounded-b-3xl mb-8">
+        <div class="container mx-auto text-center">
+            <h1 class="text-3xl font-bold">
+                <i class="fas fa-folder-open"></i> Gestión de Archivos
+            </h1>
+            <p class="text-lg opacity-90 mt-2">Sube y visualiza archivos</p>
+        </div>
+    </section>
+
+    <section class="container mx-auto px-4 mb-12">
+        <a href="clases.html" class="inline-flex items-center gap-2 text-primary hover:text-primaryDark font-semibold transition-colors mb-8">
+            <i class="fas fa-arrow-left"></i> Volver a Clases
+        </a>
+        
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="bg-primary text-white px-6 py-4">
+                    <h2 class="font-bold text-lg">
+                        <i class="fas fa-cloud-upload-alt mr-2"></i> Subir Archivo
+                    </h2>
+                </div>
+                <div class="p-6">
+                    <div class="mb-4">
+                        <label class="block font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-file-signature label-icon"></i> Nombre del Archivo
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-pen text-gray-400"></i>
+                            </div>
+                            <input type="text" name="nombre" id="nombre" class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all" placeholder="ejemplo.txt">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-file label-icon"></i> Seleccionar Archivo
+                        </label>
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary hover:bg-primary/5 transition-all cursor-pointer">
+                            <label class="cursor-pointer">
+                                <input class="hidden" type="file" name="fichero" id="fichero" onchange="document.getElementById('fileName').textContent = this.files[0] ? this.files[0].name : 'Ningún archivo seleccionado'">
+                                <div class="text-primary text-4xl mb-2">
+                                    <i class="fas fa-upload"></i>
+                                </div>
+                                <span class="text-gray-600">Haz clic para seleccionar archivo</span>
+                                <p id="fileName" class="text-sm text-gray-400 mt-2 font-semibold">Ningún archivo seleccionado</p>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button type="button" onclick="enviarArchivo()" class="w-full bg-primary hover:bg-primaryDark text-white font-bold py-3 px-4 rounded-lg transition-all transform hover:scale-105 shadow-lg">
+                        <i class="fas fa-cloud-upload-alt"></i>&nbsp;Subir Archivo
+                    </button>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="bg-primary text-white px-6 py-4">
+                    <h2 class="font-bold text-lg">
+                        <i class="fas fa-eye mr-2"></i> Ver Contenido
+                    </h2>
+                </div>
+                <div class="p-6">
+                    <div class="mb-4">
+                        <label class="block font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-search label-icon"></i> Buscar Archivo
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </div>
+                            <input type="text" name="nombreArchivo" id="nombreArchivo" class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all" placeholder="ejemplo.txt">
+                        </div>
+                    </div>
+                    
+                    <button type="button" onclick="verArchivo()" class="w-full bg-primaryLight hover:bg-primary text-white font-bold py-3 px-4 rounded-lg transition-all transform hover:scale-105 shadow-lg">
+                        <i class="fas fa-eye"></i>&nbsp;Ver Contenido
+                    </button>
+                    
+                    <div class="mt-4">
+                        <label class="block font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-file-alt label-icon"></i> Contenido del Archivo
+                        </label>
+                        <textarea id="contenidoArchivo" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all font-mono text-sm" readonly placeholder="El contenido del archivo aparecerá aquí..." rows="8"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Agregar Clase - Academia de Idiomas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#485fc7',
+                        primaryDark: '#3a51b3'
+                    }
+                }
+            }
+        }
+    </script>
+    <script>
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        
+        function guardar(){
+            let idioma=document.getElementById("idioma").value;
+            let nivel=document.getElementById("nivel").value;
+            let precio=document.getElementById("precio").value;
+            let foto=document.getElementById("foto").value;
+            
+            if (!idioma || !nivel || !precio || !foto) {
+                alert("Por favor, completa todos los campos");
+                return;
+            }
+            
+            let datos=JSON.stringify({
+                "idioma":idioma,
+                "nivel":nivel,
+                "precio":parseFloat(precio),
+                "foto":foto
+            });
+            
+            const btn = document.querySelector(".btn-primary");
+            btn.classList.add("opacity-50", "cursor-not-allowed");
+            
+            var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: datos
+            };
+
+            fetch("/api/clases/", requestOptions)
+                .then(response => response.json())
+                .then(result => {
+                    btn.classList.remove("opacity-50", "cursor-not-allowed");
+                    if (result.status == "OK"){
+                        alert("Clase guardada correctamente");
+                        location.href="clases.html";
+                    } else {
+                        alert("La clase no ha podido ser guardada");
+                    }
+                })
+                .catch(error => {
+                    btn.classList.remove("opacity-50", "cursor-not-allowed");
+                    console.log('error', error);
+                    alert("Se ha producido un error y la clase no ha podido ser guardada");
+                });
+        }
+        
+        document.addEventListener('keypress', function(e) {
+            if(e.key === 'Enter') {
+                guardar();
+            }
+        });
+    </script>
+</head>
+<body class="bg-gradient-to-br from-gray-100 to-gray-200 min-h-screen font-sans">
+    <nav class="bg-gradient-to-r from-primary to-purple-600 shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <a class="text-white font-bold text-lg" href="clases.html">
+                    <i class="fas fa-language"></i>&nbsp;Academia de Idiomas
+                </a>
+                <a class="text-white/90 hover:bg-white/10 px-3 py-2 rounded-lg transition-colors" href="clases.html">
+                    <i class="fas fa-arrow-left"></i>&nbsp;Volver a Clases
+                </a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="bg-gradient-to-r from-primary to-purple-600 text-white py-12 px-8 rounded-b-3xl mb-8">
+        <div class="container mx-auto text-center">
+            <h1 class="text-3xl font-bold">
+                <i class="fas fa-plus-circle"></i> Agregar Nueva Clase
+            </h1>
+            <p class="text-lg opacity-90 mt-2">Completa los datos del nuevo curso</p>
+        </div>
+    </div>
+
+    <section class="container mx-auto px-4 mb-12">
+        <div class="max-w-lg mx-auto bg-white rounded-xl shadow-xl p-8">
+            <h2 class="text-2xl font-bold text-primary mb-6">
+                <i class="fas fa-edit mr-2"></i> Datos de la Clase
+            </h2>
+            
+            <div class="mb-5">
+                <label class="block font-semibold text-gray-700 mb-2" for="idioma">
+                    <i class="fas fa-language mr-2"></i> Idioma
+                </label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-globe text-gray-400"></i>
+                    </div>
+                    <input required type="text" class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all" placeholder="Ej: Inglés, Español, Francés" name="idioma" id="idioma">
+                </div>
+            </div>
+            
+            <div class="mb-5">
+                <label class="block font-semibold text-gray-700 mb-2" for="nivel">
+                    <i class="fas fa-signal mr-2"></i> Nivel
+                </label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-chart-bar text-gray-400"></i>
+                    </div>
+                    <select name="nivel" id="nivel" class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all bg-white">
+                        <option value="">Selecciona un nivel</option>
+                        <option value="Básico">Básico</option>
+                        <option value="Intermedio">Intermedio</option>
+                        <option value="Avanzado">Avanzado</option>
+                        <option value="Nativo">Nativo</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="mb-5">
+                <label class="block font-semibold text-gray-700 mb-2" for="precio">
+                    <i class="fas fa-tag mr-2"></i> Precio (€)
+                </label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-euro-sign text-gray-400"></i>
+                    </div>
+                    <input required type="number" class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all" placeholder="99.99" name="precio" id="precio" min="0" step="0.01">
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <label class="block font-semibold text-gray-700 mb-2" for="foto">
+                    <i class="fas fa-image mr-2"></i> URL de la Foto
+                </label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-link text-gray-400"></i>
+                    </div>
+                    <input required type="text" class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all" placeholder="https://ejemplo.com/imagen.jpg" name="foto" id="foto">
+                </div>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row justify-center gap-4 mt-8">
+                <button type="button" onclick="guardar()" class="btn-primary bg-primary hover:bg-primaryDark text-white font-bold py-3 px-8 rounded-lg transition-all transform hover:scale-105 shadow-lg">
+                    <i class="fas fa-save"></i>&nbsp;Guardar Clase
+                </button>
+                <a href="clases.html" class="inline-flex items-center justify-center px-8 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-lg transition-all">
+                    <i class="fas fa-times"></i>&nbsp;Cancelar
+                </a>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python
+  namespace: grupoa3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: python
+  template:
+    metadata:
+      labels:
+        app: python
+    spec:
+      containers:
+        - name: python
+          image: danigarcia04/python-app:1
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: grupoa3-secret
+                  key: MARIADB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: grupoa3-secret
+                  key: MARIADB_USER_PASSWORD
+            - name: DB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: grupoa3-secret
+                  key: MARIADB_DATABASE
+            - name: DB_HOST
+              value: mariadb
+            - name: DB_PORT
+              value: "3306"
+            - name: PORT
+              value: "8080"
+            - name: HOST
+              value: "0.0.0.0"
