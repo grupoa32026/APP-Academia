@@ -8,7 +8,7 @@ spec:
   selector:
     matchLabels:
       app: apache-waf
-    template:
+  template:
     metadata:
       annotations:
         co.elastic.logs/enabled: "true"
