@@ -8,13 +8,23 @@ spec:
   selector:
     matchLabels:
       app: apache-waf
-  template:
+    template:
     metadata:
+      annotations:
+        co.elastic.logs/enabled: "true"
+        co.elastic.logs.paths: /var/log/apache2/*.log        
+
+        co.elastic.logs/module: apache
+        co.elastic.logs.fileset.access.enabled: "true"
+        co.elastic.logs.fileset.error.enabled: "true"
+        co.elastic.logs/processors.add_fields.fields.service: apache-waf
+        co.elastic.logs/processors.add_fields.fields.env: grupoa3
       labels:
         app: apache-waf
+        env: grupoa3
     spec:
       containers:
         - name: apache
-          image: danigarcia04/apache-app:1.1
+          image: danigarcia04/apache-app:1.2
           ports:
             - containerPort: 80
