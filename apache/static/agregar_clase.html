@@ -25,7 +25,10 @@
     <script>
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
-        
+        if (sessionStorage.getItem("csrf_token")){
+            myHeaders.append("X-CSRFToken",sessionStorage.getItem("csrf_token"))
+        }
+
         function guardar(){
             let idioma=document.getElementById("idioma").value;
             let nivel=document.getElementById("nivel").value;

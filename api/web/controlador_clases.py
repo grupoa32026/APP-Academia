@@ -1,5 +1,5 @@
 from bd import obtener_conexion
-import sys
+from funciones_auxiliares import encode_output
 
 
 def convertir_clase_a_json(clase):
@@ -10,7 +10,7 @@ def convertir_clase_a_json(clase):
     d['precio'] = float(clase[3])
     d['iva'] = calculariva(float(clase[3]))
     d['foto'] = clase[4]
-    return d
+    return encode_output(d)
 
 def calculariva(importe):
     return importe * 0.21

@@ -1,0 +1,7 @@
+import os
+
+SECRET_KEY = os.environ.get('SECRET_KEY') or 'CLAVE-PEPS'
+WTF_CSRF_SECRET_KEY = os.environ.get('WTF_CSRF_SECRET_KEY') or 'CLAVE-CSRF-PEPS'
+WTF_CSRF_ENABLED = True
+WTF_CSRF_TIME_LIMIT = None
+DEBUG = True

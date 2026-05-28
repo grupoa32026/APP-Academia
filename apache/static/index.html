@@ -38,16 +38,19 @@
     <script>
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
-        
+        if (sessionStorage.getItem("csrf_token")){
+            myHeaders.append("X-CSRFToken",sessionStorage.getItem("csrf_token"))
+        }
+
         function verComentarios() {
             location.href="comentarios.html";
         }
-        
+
         function conectar() {
             document.querySelector(".error-message").style.display = "none";
             const btn = document.querySelector(".btn-primary");
             btn.classList.add("opacity-50", "cursor-not-allowed");
-            
+
             var raw = JSON.stringify({
                 "username": document.getElementById("username").value,
                 "password": document.getElementById("password").value
@@ -64,6 +67,8 @@
                 .then(result => {
                     btn.classList.remove("opacity-50", "cursor-not-allowed");
                     if (result.status == "OK") {
+                        sessionStorage.setItem("csrf_token", result.csrf_token);
+                        sessionStorage.setItem("perfil", result.perfil);
                         localStorage.setItem("username", document.getElementById("username").value);
                         location.href = "clases.html";
                     } else {
@@ -75,7 +80,7 @@
                     console.log('error', error);
                 });
         }
-        
+
         document.addEventListener('keypress', function(e) {
             if(e.key === 'Enter') {
                 conectar();

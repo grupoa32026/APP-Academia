@@ -26,7 +26,10 @@
     <script>
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
-        
+        if (sessionStorage.getItem("csrf_token")){
+            myHeaders.append("X-CSRFToken",sessionStorage.getItem("csrf_token"))
+        }
+
         function showLoading() {
             document.getElementById('loading').classList.remove('hidden');
         }
@@ -38,20 +41,21 @@
         function enviarArchivo(){
             const nombre = document.getElementById("nombre").value;
             const fileInput = document.getElementById("fichero");
-            
+
             if (!nombre || !fileInput.files[0]) {
                 alert("Por favor, completa todos los campos");
                 return;
             }
-            
+
             showLoading();
-            
+
             const formData = new FormData();
             formData.append('fichero', fileInput.files[0]);
             formData.append('nombre', nombre);
-            
+
             var requestOptions = {
                 method: 'POST',
+                headers: myHeaders,
                 body: formData
             };
 
@@ -77,16 +81,17 @@
 
         function verArchivo(){
             const nombreArchivo = document.getElementById("nombreArchivo").value;
-            
+
             if (!nombreArchivo) {
                 alert("Por favor, ingresa el nombre del archivo");
                 return;
             }
-            
+
             showLoading();
-            
+
             var requestOptions = {
                 method: 'GET',
+                headers: myHeaders,
             };
 
             fetch("/api/ficheros/" + nombreArchivo, requestOptions)

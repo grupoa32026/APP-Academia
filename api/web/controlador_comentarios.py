@@ -1,6 +1,5 @@
 from bd import obtener_conexion
-import sys
-import datetime as dt
+from funciones_auxiliares import encode_output
 
 
 def convertir_comentario_a_json(comentario):
@@ -8,7 +7,7 @@ def convertir_comentario_a_json(comentario):
     d['id'] = comentario[0]
     d['usuario'] = comentario[1]
     d['descripcion'] = comentario[2]
-    return d
+    return encode_output(d)
 
 def insertar_comentario(usuario, descripcion):
     conexion = None

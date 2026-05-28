@@ -34,6 +34,10 @@ services:
       DB_PORT: ${DB_PORT}
       PORT: ${PORT}
       HOST: ${HOST}
+      WTF_CSRF_SECRET_KEY: ${WTF_CSRF_SECRET_KEY}
+      PASSWORD_PEPPER: ${PASSWORD_PEPPER}
+    volumes:
+      - ./api/logs:/app/logs
     depends_on:
       - mariadba3
     restart: unless-stopped
@@ -42,10 +46,12 @@ services:
     build: ./apache
     ports:
       - 6003:80
+      - 6443:443
     depends_on:
       - pythona3
     links:
       - pythona3
     restart: unless-stopped
+
 volumes:
   mariadb_dataa3:
